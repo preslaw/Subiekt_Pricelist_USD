@@ -1,0 +1,28 @@
+SELECT
+
+TOW.tw_Symbol as Item,
+ROUND(CEN.tc_CenaNetto3/WALUTA_KURS.wk_Sredni,2) as 'USD Price',
+WALUTA_KURS.wk_Sredni as 'Exchange rate',
+GETDATE()-1 as 'Exchange Rate Date'
+
+FROM tw__towar TOW
+
+LEFT JOIN tw_CechaTw CECHA ON TOW.tw_ID=CECHA.cht_IdTowar
+
+LEFT JOIN tw_Cena CEN ON CEN.tc_idTowar=TOW.tw_id
+
+,sl_WalutaKurs WALUTA_KURS
+
+WHERE 
+CECHA.cht_idCecha =2
+AND
+WALUTA_KURS.wk_IdWaluty=14
+AND 
+
+
+--- if it is Monday take the exchange rate from Friday (-3) otherwise from the previous day (-1)
+WALUTA_KURS.wk_DATA= CASE  WHEN(DATEPART(WEEKDAY, GETDATE())) >2 THEN  DATEADD(day, -1, convert(date, GETDATE())) 
+ELSE DATEADD(day, -3, convert(date, GETDATE())) END
+
+
+
